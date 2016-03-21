@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ILSpy.GetPrigIndirectionStubSetting.Plugin</id>
+    <version>0.0.0-alpha01</version>
+    <title>Get Prig Indirection Stub Setting plugin for ILSpy</title>
+    <authors>Akira Sugiura</authors>
+    <owners>Akira Sugiura</owners>
+    <licenseUrl>https://github.com/urasandesu/ILSpy.GetPrigIndirectionStubSetting.Plugin/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/urasandesu/ILSpy.GetPrigIndirectionStubSetting.Plugin</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>
+      ILSpy plugin supporting Prig.
+    </summary>
+    <description>
+      This is a ILSpy plugin that makes more easy to get Prig Indirection Stub Setting.
+    </description>
+    <copyright>(c) 2016 Akira Sugiura. All rights reserved.</copyright>
+    <tags>tdd isolation mock mocks mocking fake fakes faking unittest unittesting</tags>
+    <releaseNotes>0.0.0-alpha01
+* Initial release.
+
+
+About more previous versions, please see https://github.com/urasandesu/ILSpy.GetPrigIndirectionStubSetting.Plugin/releases.
+    </releaseNotes>
+    <dependencies>
+      <dependency id="Prig" version="2.2.0" />
+      <dependency id="ilspy" version="2.3.1.1855" />
+    </dependencies> 
+  </metadata>
+  <files>
+    <file src="tools\**\*.*" target="tools" />
+    <file src="..\ILSpy.GetPrigIndirectionStubSetting.Plugin\bin\Release\ILSpy.GetPrigIndirectionStubSetting.Plugin.dll" target="tools" />
+  </files>
+</package>
