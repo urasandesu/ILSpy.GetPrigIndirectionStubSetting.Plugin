@@ -31,10 +31,9 @@
 
 using System;
 
-namespace ILSpy.GetPrigIndirectionStubSetting.Plugin
+namespace ILSpy.GetPrigIndirectionStubSetting.Common
 {
-    [Serializable]
-    struct ReflectionMethodId
+    public struct ReflectionMethodId
     {
         public ReflectionMethodId(string assemblyLocation, int typeDefToken, int methodDefToken)
             : this()
@@ -44,8 +43,8 @@ namespace ILSpy.GetPrigIndirectionStubSetting.Plugin
             MethodDefToken = methodDefToken;
         }
 
-        public string AssemblyLocation { get; private set; }
-        public int TypeDefToken { get; private set; }
-        public int MethodDefToken { get; private set; }
+        public string AssemblyLocation { get; set; }
+        public int TypeDefToken { get; set; }
+        public int MethodDefToken { get; set; }
     }
 }

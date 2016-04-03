@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>ILSpy.GetPrigIndirectionStubSetting.Plugin</id>
-    <version>0.0.0-alpha01</version>
+    <version>0.0.0-alpha02</version>
     <title>Get Prig Indirection Stub Setting plugin for ILSpy</title>
     <authors>Akira Sugiura</authors>
     <owners>Akira Sugiura</owners>
@@ -17,7 +17,11 @@
     </description>
     <copyright>(c) 2016 Akira Sugiura. All rights reserved.</copyright>
     <tags>tdd isolation mock mocks mocking fake fakes faking unittest unittesting</tags>
-    <releaseNotes>0.0.0-alpha01
+    <releaseNotes>Version 0.0.0-alpha02
+* 
+
+
+Version 0.0.0-alpha01
 * Initial release.
 
 
@@ -31,5 +35,7 @@ About more previous versions, please see https://github.com/urasandesu/ILSpy.Get
   <files>
     <file src="tools\**\*.*" target="tools" />
     <file src="..\ILSpy.GetPrigIndirectionStubSetting.Plugin\bin\Release\ILSpy.GetPrigIndirectionStubSetting.Plugin.dll" target="tools" />
+    <file src="..\ILSpy.GetPrigIndirectionStubSetting.Plugin\bin\Release\ILSpy.GetPrigIndirectionStubSetting.Common.dll" target="tools" />
+    <file src="..\ILSpy.GetPrigIndirectionStubSetting.Plugin\bin\Release\Get-PrigIndirectionStubSetting.ps1" target="tools" />
   </files>
 </package>

@@ -30,3 +30,9 @@
 
 $path = [System.IO.Path]::Combine($env:ChocolateyInstall, 'lib\ilspy\tools\ILSpy.GetPrigIndirectionStubSetting.Plugin.dll')
 Remove-Item $path -Force
+
+$path = [System.IO.Path]::Combine($env:ChocolateyInstall, 'lib\ilspy\tools\ILSpy.GetPrigIndirectionStubSetting.Common.dll')
+Remove-Item $path -Force
+
+$path = [System.IO.Path]::Combine($env:ChocolateyInstall, 'lib\ilspy\tools\Get-PrigIndirectionStubSetting.ps1')
+Remove-Item $path -Force

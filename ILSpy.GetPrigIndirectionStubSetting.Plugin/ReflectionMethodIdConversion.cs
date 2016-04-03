@@ -29,6 +29,7 @@
 
 
 
+using ILSpy.GetPrigIndirectionStubSetting.Common;
 using System.Collections.Generic;
 
 namespace ILSpy.GetPrigIndirectionStubSetting.Plugin

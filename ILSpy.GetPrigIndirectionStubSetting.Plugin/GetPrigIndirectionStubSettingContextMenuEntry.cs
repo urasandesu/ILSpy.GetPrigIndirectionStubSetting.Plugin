@@ -32,16 +32,19 @@
 using ICSharpCode.ILSpy;
 using ICSharpCode.ILSpy.TreeNodes;
 using ICSharpCode.TreeView;
+using ILSpy.GetPrigIndirectionStubSetting.Common;
+using Microsoft.PowerShell;
 using Mono.Cecil;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using System.Xml.Serialization;
 
 namespace ILSpy.GetPrigIndirectionStubSetting.Plugin
 {
@@ -94,19 +97,28 @@ namespace ILSpy.GetPrigIndirectionStubSetting.Plugin
         {
             if (context.SelectedTreeNodes == null)
                 return false;
-
-            return context.SelectedTreeNodes.All(IsReplaceableNodeSelected);
+            
+            return context.SelectedTreeNodes.All(new ReplaceableNodesFinder().IsSatisfied);
         }
 
-        static bool IsReplaceableNodeSelected(SharpTreeNode node)
+        class ReplaceableNodesFinder
         {
-            var memberNode = node as IMemberTreeNode;
-            if (memberNode == null)
-                return false;
+            readonly HashSet<string> m_assemblyFullNames = new HashSet<string>();
 
-            return memberNode.Member is MethodDefinition ||
-                   memberNode.Member is PropertyDefinition ||
-                   memberNode.Member is EventDefinition;
+            public bool IsSatisfied(SharpTreeNode node)
+            {
+                var memberNode = node as IMemberTreeNode;
+                if (memberNode == null)
+                    return false;
+
+                m_assemblyFullNames.Add(memberNode.Member.Module.Assembly.FullName);
+                if (1 < m_assemblyFullNames.Count)
+                    return false;
+
+                return memberNode.Member is MethodDefinition ||
+                       memberNode.Member is PropertyDefinition ||
+                       memberNode.Member is EventDefinition;
+            }
         }
 
         static IEnumerable<ReflectionMethodId> GetMethodIds(IEnumerable<MemberReference> members)
@@ -118,74 +130,30 @@ namespace ILSpy.GetPrigIndirectionStubSetting.Plugin
 
         static string GetIndirectionStubSetting(IEnumerable<ReflectionMethodId> methodIds)
         {
-            var tempDomain = default(AppDomain);
-            try
+            var methodIdsPath = Path.GetTempFileName();
+            using (var sw = new StreamWriter(methodIdsPath))
             {
-                tempDomain = AppDomain.CreateDomain("TemporaryDomain");
-
-                var impl = new GetIndirectionStubSettingImpl();
-                impl.Parameter_methodIds = methodIds.ToArray();
-                tempDomain.DoCallBack(impl.Invoke);
-
-                return impl.Result;
-            }
-            finally
-            {
-                if (tempDomain != null)
-                    AppDomain.Unload(tempDomain);
-            }
-        }
-
-        class GetIndirectionStubSettingImpl : MarshalByRefObject
-        {
-            public ReflectionMethodId[] Parameter_methodIds { get; set; }
-
-            public void Invoke()
-            {
-                var methods = ToReflectionMethod(Parameter_methodIds).ToArray();
-
-                var initial = InitialSessionState.CreateDefault();
-                initial.AuthorizationManager = new AuthorizationManager("MyShellId");
-                var pkgDir = EnvironmentRepository.GetPackageFolder();
-                initial.ImportPSModule(new[] { Path.Combine(EnvironmentRepository.GetPackageFolder(), @"tools\Urasandesu.Prig") });
-
-                using (var runspace = RunspaceFactory.CreateRunspace(initial))
-                {
-                    runspace.Open();
-                    runspace.SessionStateProxy.SetVariable("InputObject", methods);
-                    var command = "$InputObject | Get-IndirectionStubSetting";
-                    using (var pipeline = runspace.CreatePipeline(command, false))
-                        Result = string.Join("\r\n", pipeline.Invoke().Select(_ => _.BaseObject).Cast<string>());
-                }
+                var serializer = new XmlSerializer(typeof(ReflectionMethodId[]));
+                serializer.Serialize(sw, methodIds.ToArray());
             }
 
-            public string Result { get; private set; }
+            var initial = InitialSessionState.CreateDefault();
+            initial.AuthorizationManager = new AuthorizationManager("MyShellId");
 
-            static IEnumerable<MethodBase> ToReflectionMethod(IEnumerable<ReflectionMethodId> methodIds)
+            using (var runspace = RunspaceFactory.CreateRunspace(initial))
             {
-                foreach (var methodId in methodIds)
-                {
-                    var assembly = Assembly.LoadFrom(methodId.AssemblyLocation);
-                    var type = GetTypes(assembly)[methodId.TypeDefToken];
-                    yield return GetMethods(type)[methodId.MethodDefToken];
-                }
-            }
+                runspace.Open();
+                runspace.SessionStateProxy.SetVariable("MethodIdsPath", methodIdsPath);
 
-            static Dictionary<Assembly, Dictionary<int, Type>> ms_assemblyTypes = new Dictionary<Assembly, Dictionary<int, Type>>();
-            static Dictionary<int, Type> GetTypes(Assembly assembly)
-            {
-                if (!ms_assemblyTypes.ContainsKey(assembly))
-                    ms_assemblyTypes.Add(assembly, new Dictionary<int, Type>(assembly.GetTypes().ToDictionary(_ => _.MetadataToken)));
-                return ms_assemblyTypes[assembly];
-            }
-
-            const BindingFlags AllDeclared = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-            static Dictionary<Type, Dictionary<int, MethodBase>> ms_typeMethods = new Dictionary<Type, Dictionary<int, MethodBase>>();
-            static Dictionary<int, MethodBase> GetMethods(Type type)
-            {
-                if (!ms_typeMethods.ContainsKey(type))
-                    ms_typeMethods.Add(type, new Dictionary<int, MethodBase>(type.GetMembers(AllDeclared).OfType<MethodBase>().ToDictionary(_ => _.MetadataToken)));
-                return ms_typeMethods[type];
+                var executingAsmDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var getPrigIndStubSettingPs1Path = Path.Combine(executingAsmDirPath, "Get-PrigIndirectionStubSetting.ps1");
+                var command = new StringBuilder();
+                command.AppendFormat("Set-ExecutionPolicy Bypass -Scope Process -Force\r\n", executingAsmDirPath);
+                command.AppendFormat("cd \"{0}\"\r\n", executingAsmDirPath);
+                command.AppendFormat("[System.Environment]::CurrentDirectory = $PWD\r\n", executingAsmDirPath);
+                command.AppendFormat("& \"{0}\" -MethodIdsPath $MethodIdsPath", getPrigIndStubSettingPs1Path);
+                using (var pipeline = runspace.CreatePipeline(command.ToString(), false))
+                    return string.Join("\r\n", pipeline.Invoke().Select(_ => _.BaseObject).Cast<string>());
             }
         }
     }

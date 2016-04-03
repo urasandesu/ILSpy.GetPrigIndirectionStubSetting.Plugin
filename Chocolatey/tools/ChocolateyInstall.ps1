@@ -29,6 +29,13 @@
 
 
 
+$destination = [System.IO.Path]::Combine($env:ChocolateyInstall, 'lib\ilspy\tools\')
+
 $path = [System.IO.Path]::Combine($env:ChocolateyInstall, 'lib\ILSpy.GetPrigIndirectionStubSetting.Plugin\tools\ILSpy.GetPrigIndirectionStubSetting.Plugin.dll')
-$destination = [System.IO.Path]::Combine($env:ChocolateyInstall, 'lib\ilspy\tools\ILSpy.GetPrigIndirectionStubSetting.Plugin.dll')
+Copy-Item $path $destination -Force
+
+$path = [System.IO.Path]::Combine($env:ChocolateyInstall, 'lib\ILSpy.GetPrigIndirectionStubSetting.Plugin\tools\ILSpy.GetPrigIndirectionStubSetting.Common.dll')
+Copy-Item $path $destination -Force
+
+$path = [System.IO.Path]::Combine($env:ChocolateyInstall, 'lib\ILSpy.GetPrigIndirectionStubSetting.Plugin\tools\Get-PrigIndirectionStubSetting.ps1')
 Copy-Item $path $destination -Force
