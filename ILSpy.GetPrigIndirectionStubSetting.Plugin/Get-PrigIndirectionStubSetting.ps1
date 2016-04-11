@@ -125,10 +125,12 @@ function GetIndirectionStubSettingCore {
             $members = $type.GetMembers([System.Reflection.BindingFlags]'Public, NonPublic, Static, Instance, DeclaredOnly')
             foreach ($member in $members) {
                 if ($member -isnot [System.Reflection.MethodBase]) { continue }
-                $typeMethods[$type][$member.MetadataToken] = $member
+                $methods = $typeMethods[$type]
+                $methods[$member.MetadataToken] = $member
             }
         }
-        $inputObject.Add($typeMethods[$type][$methodId.MethodDefToken])
+        $methods = $typeMethods[$type]
+        $inputObject.Add($methods[$methodId.MethodDefToken])
     }
 
     Import-Module ([System.IO.Path]::Combine($env:URASANDESU_PRIG_PACKAGE_FOLDER, 'tools\Urasandesu.Prig'))
