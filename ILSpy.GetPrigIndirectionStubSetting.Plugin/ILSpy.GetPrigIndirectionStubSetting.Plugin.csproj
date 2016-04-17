@@ -31,12 +31,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.TreeView">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Bin\ICSharpCode.TreeView.dll</HintPath>
     </Reference>
     <Reference Include="ILSpy">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Bin\ILSpy.exe</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Bin\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
@@ -67,6 +70,7 @@
     <Content Include="Get-PrigIndirectionStubSetting.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Screenshot.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ILSpy.GetPrigIndirectionStubSetting.Common\ILSpy.GetPrigIndirectionStubSetting.Common.csproj">

@@ -87,8 +87,7 @@ switch ($PsCmdlet.ParameterSetName) {
         if ($BuildTarget -ne "Clean") {
             Push-Location ([System.IO.Path]::Combine($curDir, 'Chocolatey'))
             [System.Environment]::CurrentDirectory = $PWD
-			cpack 'ILSpy.GetPrigIndirectionStubSetting.Plugin.nuspec'
-			Pop-Location
+            cpack 'ILSpy.GetPrigIndirectionStubSetting.Plugin.nuspec'
         }
     }
 }

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>ILSpy.GetPrigIndirectionStubSetting.Plugin</id>
-    <version>0.0.0-alpha02</version>
+    <version>0.0.0</version>
     <title>Get Prig Indirection Stub Setting plugin for ILSpy</title>
     <authors>Akira Sugiura</authors>
     <owners>Akira Sugiura</owners>
@@ -17,8 +17,8 @@
     </description>
     <copyright>(c) 2016 Akira Sugiura. All rights reserved.</copyright>
     <tags>tdd isolation mock mocks mocking fake fakes faking unittest unittesting</tags>
-    <releaseNotes>Version 0.0.0-alpha02
-* 
+    <releaseNotes>Version 0.0.0
+* Fixed #1: x86 dll cannot be loaded. We considered [the six cases to achieve it](https://github.com/urasandesu/ILSpy.GetPrigIndirectionStubSetting.Plugin/issues/1#issuecomment-203126632).
 
 
 Version 0.0.0-alpha01
