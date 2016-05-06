@@ -32,3 +32,9 @@ For example, if you select `Process.Start(string, string)` method like the above
 ```
 
 After that, you just past it to the [Stub Settings File](https://github.com/urasandesu/Prig/wiki/Cheat-Sheet#-stub-settings-file).
+
+**NOTE:** Sometimes, you will maybe get an error message that represents unresolved the dependency(e.g. `System.Management.Automation.RuntimeException: Exception calling "LoadFrom" with "1" argument(s): "Could not load file or assembly 'bla bla bla' or one of its dependencies. Operation is not supported. (Exception from HRESULT: 0x80131515)"`). Normally, any dependencies will be resolved by ILSpy automatically. If you got such error message, please check the following point: 
+* Are the dependent assemblies located in the place that ILSpy can reference?  
+  For example, the directory same as the assembly that `Get Prig Indirection Stub Setting` member belongs, GAC and so on.
+* Are the dependent assemblies all unblocked?  
+  The dlls/exes that are downloaded through Internet Explorer from the Internet Zone are probably blocked by ADS. Please see also [the exchange in the issue](https://github.com/urasandesu/Prig/issues/70).
