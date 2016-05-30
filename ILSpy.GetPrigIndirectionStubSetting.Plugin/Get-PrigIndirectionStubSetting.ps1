@@ -87,7 +87,8 @@ function InvokeCore {
 
     $outputsPath = [System.IO.Path]::GetTempFileName()
     $errorsPath = [System.IO.Path]::GetTempFileName()
-    Start-Process $powershell $argList -Wait -WindowStyle 'Hidden' -RedirectStandardOutput $outputsPath -RedirectStandardError $errorsPath
+    $proc = Start-Process $powershell $argList -Wait -WindowStyle 'Hidden' -RedirectStandardOutput $outputsPath -RedirectStandardError $errorsPath -PassThru
+    $proc.WaitForExit()
     $errors = Get-Content $errorsPath
     Remove-Item $errorsPath -ErrorAction SilentlyContinue
     if (0 -lt $errors.Length) {
